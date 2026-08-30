@@ -149,6 +149,24 @@ were never unregistered, so nothing else changes.
 
 ## Changelog
 
+### v0.2.2 — tiered disclosure budget + warm LRU + incremental semantic cache (2026-08-30)
+1. **Tiered disclosure budget** (`disclosureBudget`, default 0 = off): caps how
+   many tool names + descriptions are disclosed per request. Over budget, tools
+   are demoted tier by tier (T2 name+desc → T3 name-only → T4 hidden) instead
+   of being dropped wholesale; core/hot/meta tools stay tier-1 and never demote.
+2. **Warm LRU** (`maxWarmTools`, default 0 = off): recently used tools are kept
+   visible within a bounded LRU, persisted to state so a restart keeps them
+   warm. `0` keeps the exact legacy injection surface.
+3. **Incremental semantic cache**: the bge-m3 embedding cache now diffs by
+   content fingerprint — only docs whose text changed get re-embedded, and a
+   model change rebuilds once. A failed refresh never clobbers a good cache.
+4. **Config persistence**: `lib/storage.js` reads/writes state with a
+   settings → state → memory fallback chain (never touches cordis.patch.yml).
+5. **Explicit fail-open**: `missingMetaTools` gates meta-tool availability —
+   any snapshot oddity returns the full tool list rather than a folded one.
+6. 72 tests green (new: budget 8 / warm 8 / semantic-incremental 5 / storage 7
+   / fail-open 4).
+
 ### v0.2.1 — heat decay + exact-name priority (2026-08-30)
 1. **Hot heat decay** (`hotWindowDays`, default 3): a tool is promoted to
    always-visible only when its call count stays inside the sliding window —

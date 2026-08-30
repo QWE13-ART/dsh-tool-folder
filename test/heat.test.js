@@ -3,7 +3,7 @@
 // 覆盖：isHotTool 窗口衰减 / 旧格式兼容 / windowMs=0 永不过期 / prioritizeExact 精确名优先
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { isHotTool, prioritizeExact } from "../lib/metrics.js";
+import { isHotTool, prioritizeExact, missingMetaTools } from "../lib/metrics.js";
 
 const DAY = 86400000;
 
@@ -77,4 +77,24 @@ test("prioritizeExact: 空查询 / 空 hits 原样返回", () => {
   const hits = [{ id: "mcp__viking__remember", score: 1 }];
   assert.deepEqual(prioritizeExact(docs, "", hits), hits);
   assert.deepEqual(prioritizeExact(docs, "x", []), []);
+});
+
+/* ---------------- missingMetaTools：fail-open 门 ---------------- */
+
+test("missingMetaTools: 全部在位 → 空（不触发 fail-open）", () => {
+  assert.deepEqual(missingMetaTools(new Set(["tools_search", "tools_schema"]), { tools_search: true, tools_schema: true }), []);
+});
+
+test("missingMetaTools: 启用的元工具缺失 → 列出（触发 fail-open）", () => {
+  const missing = missingMetaTools(new Set(["tools_search"]), { tools_search: true, tools_schema: true });
+  assert.deepEqual(missing, ["tools_schema"]);
+});
+
+test("missingMetaTools: 禁用的不算缺失", () => {
+  assert.deepEqual(missingMetaTools(new Set([]), { tools_search: false, tools_schema: false }), []);
+  assert.deepEqual(missingMetaTools(new Set(["tools_search"]), { tools_search: true, tools_schema: false }), []);
+});
+
+test("missingMetaTools: 数组输入兼容", () => {
+  assert.deepEqual(missingMetaTools(["tools_search"], { tools_search: true, tools_schema: true }), ["tools_schema"]);
 });
