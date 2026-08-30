@@ -149,6 +149,31 @@ were never unregistered, so nothing else changes.
 
 ## Changelog
 
+### v0.2.3 — fold-ux: search fallback catalog + query expansion + stable results + discovery stats (2026-08-30)
+1. **Zero-match fallback catalog** (`fallbackCatalogSize`, default 30): when
+   `tools_search` finds nothing, it returns a name-sorted lightweight catalog
+   (name + 80-char description) instead of an empty list — the model never
+   concludes a capability doesn't exist just because its wording missed.
+   `total` reports the real catalog size (not the listed slice); the output
+   carries `fallback: true`. `0` restores the legacy empty result.
+2. **CN→EN query expansion** (`queryExpandEnabled`, default on): a 48-term
+   high-frequency intent table appends English synonyms to the search text
+   (search/find, file, image/ocr, database, deploy, schedule…). Only adds
+   terms, never rewrites the original query; exact-name priority still uses
+   the raw query, so precise lookups are byte-identical to v0.2.2.
+3. **Stable results** (`createSearchCache`, 60s TTL / LRU 200): the same query
+   returns the same result set across turns — kills per-turn candidate drift.
+4. **Discovery stats** (`recordDiscoveries`): every found tool is counted and
+   persisted (30s-throttled, merged into tool-folder-state.json); on restart
+   the top-5 are logged so low-discovery tools can be identified and their
+   descriptions improved (Anthropic's "monitor discovery rate" loop).
+5. 83 tests green (11 new: ux module).
+6. Three-axis audit (Standards / Spec / compatibility): 1 P1 fixed — warm and
+   discovery state now merge-write the shared state file instead of clobbering
+   each other; P2 hardening — `tools_search` execute got a whole-body
+   fail-open catch, fallback `total` semantics clarified, comments corrected
+   to process-level scope.
+
 ### v0.2.2 — tiered disclosure budget + warm LRU + incremental semantic cache (2026-08-30)
 1. **Tiered disclosure budget** (`disclosureBudget`, default 0 = off): caps how
    many tool names + descriptions are disclosed per request. Over budget, tools
