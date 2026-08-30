@@ -149,6 +149,23 @@ were never unregistered, so nothing else changes.
 
 ## Changelog
 
+### v0.2.4 — P1: batch tools_schema + sibling closure (2026-08-30, not yet published)
+1. **Batch expand** — `tools_schema` accepts `names: [...]` to expand several
+   tools in one call (`{ found, results: [...] }`); a single `name` keeps the
+   legacy 6-field shape byte-for-byte.
+2. **Sibling closure** (`closureSize`, default 0 = off, mirrors the
+   `maxWarmTools` compat precedent): when enabled, expanding a tool also lists
+   lightweight sibling entries (name + 120-char description) from the same
+   server prefix, so the model can batch-expand what it actually needs —
+   kills the "expanded A, now I need B" round-trip. `closure: false` opts out
+   per call.
+3. Output contract moved to a pure function (`buildSchemaResponse`, ux.js) —
+   11 new tests pin single/batch/missing/siblings branches (94 total green).
+4. Two-axis audit (Standards + Spec): 1 Critical fixed during review — the
+   single/batch routing condition was inverted (old `name`-only calls would
+   have returned the batch shape); contract tests now catch that class
+   instantly. `siblingClosure` dead code removed.
+
 ### v0.2.3 — fold-ux: search fallback catalog + query expansion + stable results + discovery stats (2026-08-30)
 1. **Zero-match fallback catalog** (`fallbackCatalogSize`, default 30): when
    `tools_search` finds nothing, it returns a name-sorted lightweight catalog
