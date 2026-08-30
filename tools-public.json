@@ -1,0 +1,2289 @@
+[
+ {
+  "name": "mcp__viking__find",
+  "description": "Fast semantic retrieval without session context. Returns ranked memories, resources, and skills with URI, abstract, and score.",
+  "inputSchema": {
+   "properties": {
+    "query": {
+     "title": "Query",
+     "type": "string"
+    },
+    "target_uri": {
+     "default": "",
+     "title": "Target Uri",
+     "type": "string"
+    },
+    "limit": {
+     "default": 10,
+     "title": "Limit",
+     "type": "integer"
+    },
+    "min_score": {
+     "default": 0.35,
+     "title": "Min Score",
+     "type": "number"
+    },
+    "level": {
+     "items": {
+      "type": "integer"
+     },
+     "type": "array",
+     "title": "Level"
+    },
+    "context_type": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array",
+     "title": "Context Type"
+    }
+   },
+   "required": [
+    "query"
+   ],
+   "title": "findArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "findOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__search",
+  "description": "Deep semantic retrieval with optional session context and intent analysis.\n\n    ``mode=\"list\"`` returns ranked memories, resources, and skills with URI,\n    abstract, and score. ``mode=\"context\"`` returns an injection-ready,\n    token-budgeted context block and supports category quotas, purpose presets,\n    detail tiers, cross-turn deduplication, peer scoping, and optional rewriting.\n    ``target_uri`` is only supported in list mode.\n    ",
+  "inputSchema": {
+   "properties": {
+    "query": {
+     "title": "Query",
+     "type": "string"
+    },
+    "target_uri": {
+     "default": "",
+     "title": "Target Uri",
+     "type": "string"
+    },
+    "session_id": {
+     "type": "string",
+     "title": "Session Id"
+    },
+    "limit": {
+     "default": 10,
+     "title": "Limit",
+     "type": "integer"
+    },
+    "min_score": {
+     "type": "number",
+     "title": "Min Score"
+    },
+    "level": {
+     "items": {
+      "type": "integer"
+     },
+     "type": "array",
+     "title": "Level"
+    },
+    "context_type": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array",
+     "title": "Context Type"
+    },
+    "mode": {
+     "default": "list",
+     "enum": [
+      "list",
+      "context"
+     ],
+     "title": "Mode",
+     "type": "string"
+    },
+    "query_expansion": {
+     "default": "auto",
+     "enum": [
+      "off",
+      "auto"
+     ],
+     "title": "Query Expansion",
+     "type": "string"
+    },
+    "max_tokens": {
+     "default": 1600,
+     "title": "Max Tokens",
+     "type": "integer"
+    },
+    "quotas": {
+     "additionalProperties": {
+      "type": "integer"
+     },
+     "type": "object",
+     "title": "Quotas"
+    },
+    "purpose": {
+     "enum": [
+      "chat",
+      "coding"
+     ],
+     "type": "string",
+     "title": "Purpose"
+    },
+    "detail": {
+     "default": "auto",
+     "enum": [
+      "auto",
+      "abstract",
+      "overview",
+      "full"
+     ],
+     "title": "Detail",
+     "type": "string"
+    },
+    "detail_by_category": {
+     "additionalProperties": {
+      "type": "string"
+     },
+     "type": "object",
+     "title": "Detail By Category"
+    },
+    "dedup_turns": {
+     "default": 0,
+     "title": "Dedup Turns",
+     "type": "integer"
+    },
+    "exclude_uris": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array",
+     "title": "Exclude Uris"
+    },
+    "peer_scope": {
+     "default": "all",
+     "enum": [
+      "actor",
+      "all"
+     ],
+     "title": "Peer Scope",
+     "type": "string"
+    },
+    "other_peer_penalty": {
+     "type": "number",
+     "title": "Other Peer Penalty"
+    },
+    "other_peer_penalties": {
+     "additionalProperties": {
+      "type": "number"
+     },
+     "type": "object",
+     "title": "Other Peer Penalties"
+    },
+    "rewrite": {
+     "default": "off",
+     "enum": [
+      "off",
+      "auto"
+     ],
+     "title": "Rewrite",
+     "type": "string"
+    },
+    "rewrite_max_bullets": {
+     "default": 6,
+     "title": "Rewrite Max Bullets",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "query"
+   ],
+   "title": "searchArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "searchOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__read",
+  "description": "Read full content from one or more viking:// file URIs. Pass a single URI string or a list for batch reads. For directory listing, use the list tool instead.",
+  "inputSchema": {
+   "properties": {
+    "uris": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array",
+     "title": "Uris"
+    }
+   },
+   "required": [
+    "uris"
+   ],
+   "title": "readArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "readOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__list",
+  "description": "List files and subdirectories under a viking:// directory URI. Use recursive=true for deep listing.",
+  "inputSchema": {
+   "properties": {
+    "uri": {
+     "title": "Uri",
+     "type": "string"
+    },
+    "recursive": {
+     "default": false,
+     "title": "Recursive",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "uri"
+   ],
+   "title": "lsArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "lsOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__tree",
+  "description": "Show the recursive directory tree under a viking:// URI, indented by depth, so you can understand the whole layout at a glance. Use this when you need a full picture of the file tree; use list for a single directory level, glob for filename patterns, and grep for content. level_limit caps the depth (default 3); node_limit caps the total entries. Set include_abstract=true to also see each file's summary (slower, but useful for orientation in unfamiliar directories).",
+  "inputSchema": {
+   "properties": {
+    "uri": {
+     "default": "viking://",
+     "title": "Uri",
+     "type": "string"
+    },
+    "level_limit": {
+     "default": 3,
+     "title": "Level Limit",
+     "type": "integer"
+    },
+    "node_limit": {
+     "default": 1000,
+     "title": "Node Limit",
+     "type": "integer"
+    },
+    "include_abstract": {
+     "default": false,
+     "title": "Include Abstract",
+     "type": "boolean"
+    }
+   },
+   "title": "treeArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "treeOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__remember",
+  "description": "Store information into OpenViking long-term memory. Use when the user says 'remember this', shares preferences, important facts, or decisions worth persisting.",
+  "inputSchema": {
+   "properties": {
+    "messages": {
+     "items": {
+      "properties": {
+       "role": {
+        "description": "Message role",
+        "enum": [
+         "user",
+         "assistant"
+        ],
+        "title": "Role",
+        "type": "string"
+       },
+       "content": {
+        "description": "Message text content",
+        "title": "Content",
+        "type": "string"
+       }
+      },
+      "required": [
+       "role",
+       "content"
+      ],
+      "title": "StoreMessage",
+      "type": "object"
+     },
+     "title": "Messages",
+     "type": "array"
+    }
+   },
+   "required": [
+    "messages"
+   ],
+   "title": "rememberArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "rememberOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__write",
+  "description": "Write text to a viking:// file. Use this to save files (notes, profiles, knowledge, state) in OpenViking the same way you would use a working directory. To change part of an existing file, prefer the edit tool over a full rewrite.\n\n    - mode=\"replace\" (default): overwrite the file; creates it and any missing parent directories if needed.\n    - mode=\"create\": fail if the file already exists.\n    - Any new file (whether created by \"replace\" or \"create\") must end in one of: .md .txt .json .yaml .yml .toml .py .js .ts\n    - mode=\"append\": append to the end of an existing file; fails if the file does not exist.\n\n    Writable scopes: viking://resources/, viking://user/{user_id}/, viking://agent/. Documented current-user roots such as viking://user/resources are expanded at this MCP boundary. The managed user subtrees skills/, peers/, privacy/ and sessions/ are read-only. After a write, semantic search indexes refresh in the background; pass wait=true to block until search reflects the change.",
+  "inputSchema": {
+   "properties": {
+    "uri": {
+     "title": "Uri",
+     "type": "string"
+    },
+    "content": {
+     "title": "Content",
+     "type": "string"
+    },
+    "mode": {
+     "default": "replace",
+     "enum": [
+      "replace",
+      "append",
+      "create"
+     ],
+     "title": "Mode",
+     "type": "string"
+    },
+    "wait": {
+     "default": false,
+     "title": "Wait",
+     "type": "boolean"
+    },
+    "timeout": {
+     "type": "number",
+     "title": "Timeout"
+    }
+   },
+   "required": [
+    "uri",
+    "content"
+   ],
+   "title": "writeArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "writeOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__edit",
+  "description": "Replace an exact string with new text in an existing viking:// file. Use this for targeted changes instead of rewriting the whole file with the write tool. old_string must match the file's current content exactly, including indentation and newlines; use the read tool first to see it. The edit fails and the file is left unchanged if old_string is not found, or if it matches more than once and replace_all is false (pass more surrounding context to make it unique, or set replace_all=true to replace every occurrence). Pass new_string=\"\" to delete old_string.\n\n    Editing a memory file preserves its metadata; after an edit, search indexes refresh in the background (pass wait=true to block until search reflects the change).",
+  "inputSchema": {
+   "properties": {
+    "uri": {
+     "title": "Uri",
+     "type": "string"
+    },
+    "old_string": {
+     "title": "Old String",
+     "type": "string"
+    },
+    "new_string": {
+     "title": "New String",
+     "type": "string"
+    },
+    "replace_all": {
+     "default": false,
+     "title": "Replace All",
+     "type": "boolean"
+    },
+    "wait": {
+     "default": false,
+     "title": "Wait",
+     "type": "boolean"
+    },
+    "timeout": {
+     "type": "number",
+     "title": "Timeout"
+    }
+   },
+   "required": [
+    "uri",
+    "old_string",
+    "new_string"
+   ],
+   "title": "editArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "editOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__add_resource",
+  "description": "Add a resource to OpenViking. Asynchronous — processing happens in the background.\n\n    Remote URL: pass ``path`` as an http(s)://, git@, ssh://, or git:// URL. A sitemap /\n    RSS / Atom URL ingests the WHOLE site as one resource tree; pass ``args={\"site\": true}``\n    to force whole-site ingestion from a bare domain.\n\n    Local file: pass ``path`` as a filesystem path (e.g. ``/tmp/foo.pdf``). The response is an\n    upload instruction — HTTP POST the file to the returned URL and the server ingests it\n    automatically; you do NOT need to call this tool again.\n\n    Args:\n        path: Remote URL or local filesystem path. Required unless ``temp_file_id`` is set.\n        temp_file_id: Server-minted upload id from a prior signed local-file upload.\n        add_type: Explicit Connector source type (e.g. \"tos\", \"git\"). When set, the\n            request routes through the Connector integration (must be enabled\n            server-side) and ``path`` is sent verbatim — never treated as a local\n            file. Requires an exact ``to`` target and cannot be combined with\n            ``temp_file_id`` or ``parent``. Leave empty for the default path-probing\n            behavior.\n        description: Optional human-readable reason for adding the resource.\n        watch_interval: Auto-refresh cadence in minutes. 0 = no watch. Prefer >=1440 (24h)\n            unless the source changes faster — every refresh re-embeds the whole resource.\n            Only applies to remote-URL invocations.\n        processing_mode: \"semantic_and_vectors\" for normal semantic processing, or\n            \"vectors_only\" to skip semantic understanding and only build vector indexes.\n        to: Target URI under viking://resources/ (e.g. \"viking://resources/volcengine/OpenViking\").\n            Required when ``add_type`` is set; otherwise leave empty to derive a URI\n            from the source.\n        parent: Parent URI under viking://resources/ for remote imports. Mutually exclusive\n            with ``to`` and not supported when ``add_type`` is set.\n        tags: Optional explicit k=v retrieval tags to apply after ingestion.\n        tag_mode: Tag update mode, \"replace\" or \"append\". Defaults to \"replace\".\n        args: Parser-specific options, e.g. {\"auth_config\": {\"token\": \"...\"}}\n            for native HTTPS Git imports and watches, {\"feishu_access_token\": \"...\"}\n            for Feishu imports, {\"site\": true} for whole-site ingestion, or\n            {\"parse_mode\": \"no_split\"} to keep each parsed document body in one file.\n    ",
+  "inputSchema": {
+   "properties": {
+    "path": {
+     "default": "",
+     "title": "Path",
+     "type": "string"
+    },
+    "temp_file_id": {
+     "default": "",
+     "title": "Temp File Id",
+     "type": "string"
+    },
+    "add_type": {
+     "default": "",
+     "title": "Add Type",
+     "type": "string"
+    },
+    "description": {
+     "default": "",
+     "title": "Description",
+     "type": "string"
+    },
+    "watch_interval": {
+     "default": 0,
+     "title": "Watch Interval",
+     "type": "number"
+    },
+    "processing_mode": {
+     "default": "semantic_and_vectors",
+     "enum": [
+      "semantic_and_vectors",
+      "vectors_only"
+     ],
+     "title": "Processing Mode",
+     "type": "string"
+    },
+    "to": {
+     "default": "",
+     "title": "To",
+     "type": "string"
+    },
+    "parent": {
+     "default": "",
+     "title": "Parent",
+     "type": "string"
+    },
+    "tags": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array",
+     "title": "Tags"
+    },
+    "tag_mode": {
+     "default": "replace",
+     "title": "Tag Mode",
+     "type": "string"
+    },
+    "args": {
+     "additionalProperties": true,
+     "type": "object",
+     "title": "Args"
+    }
+   },
+   "title": "add_resourceArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "add_resourceOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__list_watches",
+  "description": "List watch tasks (auto-refresh subscriptions) visible to the current user.",
+  "inputSchema": {
+   "properties": {},
+   "title": "list_watchesArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "list_watchesOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__cancel_watch",
+  "description": "Cancel a watch task by its target URI (e.g. \"viking://resources/volcengine/OpenViking\").",
+  "inputSchema": {
+   "properties": {
+    "to_uri": {
+     "title": "To Uri",
+     "type": "string"
+    }
+   },
+   "required": [
+    "to_uri"
+   ],
+   "title": "cancel_watchArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "cancel_watchOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__grep",
+  "description": "Search content in viking:// files using regex patterns (like grep). Supports multiple patterns searched concurrently. Use this for exact text matching; use the search tool for semantic retrieval.",
+  "inputSchema": {
+   "properties": {
+    "uri": {
+     "title": "Uri",
+     "type": "string"
+    },
+    "pattern": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array",
+     "title": "Pattern"
+    },
+    "case_insensitive": {
+     "default": false,
+     "title": "Case Insensitive",
+     "type": "boolean"
+    },
+    "node_limit": {
+     "default": 10,
+     "title": "Node Limit",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "uri",
+    "pattern"
+   ],
+   "title": "grepArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "grepOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__glob",
+  "description": "Find viking:// files matching a glob pattern (e.g. **/*.md, *.py). Use this for filename matching; use the search tool for content-based retrieval.",
+  "inputSchema": {
+   "properties": {
+    "pattern": {
+     "title": "Pattern",
+     "type": "string"
+    },
+    "uri": {
+     "default": "viking://",
+     "title": "Uri",
+     "type": "string"
+    },
+    "node_limit": {
+     "default": 100,
+     "title": "Node Limit",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "pattern"
+   ],
+   "title": "globArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "globOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__forget",
+  "description": "Permanently delete a viking:// URI from OpenViking. Irreversible — confirm with user before calling.",
+  "inputSchema": {
+   "properties": {
+    "uri": {
+     "title": "Uri",
+     "type": "string"
+    },
+    "recursive": {
+     "default": false,
+     "title": "Recursive",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "uri"
+   ],
+   "title": "forgetArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "forgetOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__viking__health",
+  "description": "Check whether the OpenViking server is healthy.",
+  "inputSchema": {
+   "properties": {},
+   "title": "healthArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "healthOutput",
+   "type": "object"
+  },
+  "server": "openviking"
+ },
+ {
+  "name": "mcp__context7__resolve-library-id",
+  "title": "Resolve Context7 Library ID",
+  "description": "Resolves a package/product name to a Context7-compatible library ID and returns matching libraries.\n\nYou MUST call this function before 'Query Documentation' tool to obtain a valid Context7-compatible library ID UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nEach result includes:\n- Library ID: Context7-compatible identifier (format: /org/project)\n- Name: Library or package name\n- Description: Short summary\n- Code Snippets: Number of available code examples\n- Source Reputation: Authority indicator (High, Medium, Low, or Unknown)\n- Benchmark Score: Quality indicator (100 is the highest score)\n- Versions: List of versions if available. Use one of those versions if the user provides a version in their query. The format of the version is /org/project/version.\n\nFor best results, select libraries based on name match, source reputation, snippet coverage, benchmark score, and relevance to your use case.\n\nSelection Process:\n1. Analyze the query to understand what library/package the user is looking for\n2. Return the most relevant match based on:\n- Name similarity to the query (exact matches prioritized)\n- Description relevance to the query's intent\n- Documentation coverage (prioritize libraries with higher Code Snippet counts)\n- Source reputation (consider libraries with High or Medium reputation more authoritative)\n- Benchmark Score: Quality indicator (100 is the highest score)\n\nResponse Format:\n- Return the selected library ID in a clearly marked section\n- Provide a brief explanation for why this library was chosen\n- If multiple good matches exist, acknowledge this but proceed with the most relevant one\n- If no good matches exist, clearly state this and suggest query refinements\n\nFor ambiguous queries, request clarification before proceeding with a best-guess match.\n\nIMPORTANT: Do not call this tool more than 3 times per question. If you cannot find what you need after 3 calls, use the best result you have.",
+  "inputSchema": {
+   "type": "object",
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+   "properties": {
+    "query": {
+     "type": "string",
+     "description": "What to look up in the library's documentation. This is used to rank library results by relevance to what the user is trying to accomplish. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+    },
+    "libraryName": {
+     "type": "string",
+     "description": "Library name to search for and retrieve a Context7-compatible library ID. Use the official library name with proper punctuation — e.g., 'Next.js' instead of 'nextjs', 'Customer.io' instead of 'customerio', 'Three.js' instead of 'threejs'."
+    }
+   },
+   "required": [
+    "query",
+    "libraryName"
+   ]
+  },
+  "annotations": {
+   "readOnlyHint": true,
+   "destructiveHint": false,
+   "openWorldHint": true,
+   "idempotentHint": true
+  },
+  "server": "context7"
+ },
+ {
+  "name": "mcp__context7__query-docs",
+  "title": "Query Documentation",
+  "description": "Retrieves and queries up-to-date documentation and code examples from Context7 for any programming library or framework.\n\nYou must call 'Resolve Context7 Library ID' tool first to obtain the exact Context7-compatible library ID required to use this tool, UNLESS the user explicitly provides a library ID in the format '/org/project' or '/org/project/version' in their query.\n\nDo not call this tool more than 3 times per question.",
+  "inputSchema": {
+   "type": "object",
+   "$schema": "https://json-schema.org/draft/2020-12/schema",
+   "properties": {
+    "libraryId": {
+     "type": "string",
+     "description": "Exact Context7-compatible library ID (e.g., '/mongodb/docs', '/vercel/next.js', '/supabase/supabase', '/vercel/next.js/v14.3.0-canary.87') retrieved from 'resolve-library-id' or directly from user query in the format '/org/project' or '/org/project/version'."
+    },
+    "query": {
+     "type": "string",
+     "description": "What to look up in the library's documentation, scoped to a single concept. Be specific and include relevant details, but keep each query to one topic — if the user's question spans multiple distinct concepts, make a separate call per concept instead of combining them, unless the question is about how the concepts interact. Good: 'How to set up authentication with JWT in Express.js' or 'React useEffect cleanup function examples'. Bad (too vague): 'auth' or 'hooks'. Bad (too broad): 'routing and auth and caching in Next.js'. The query is sent to the Context7 API for processing. Do not include any sensitive or confidential information such as API keys, passwords, credentials, personal data, or proprietary code in your query."
+    }
+   },
+   "required": [
+    "libraryId",
+    "query"
+   ]
+  },
+  "annotations": {
+   "readOnlyHint": true,
+   "destructiveHint": false,
+   "openWorldHint": true,
+   "idempotentHint": true
+  },
+  "server": "context7"
+ },
+ {
+  "name": "mcp__deeptutor__create_session",
+  "description": "\n    创建一个新的 DeepTutor 会话，用于多轮对话。\n\n    Args:\n        capability: 会话能力类型。可选: chat, deep_solve, deep_question, deep_research, visualize, mastery_path\n        metadata: 可选的会话元数据，如 {\"title\": \"线性代数学习\", \"description\": \"...\"}\n\n    Returns:\n        新创建的会话 ID，后续调用能力工具时传入此 ID 即可保持上下文\n    ",
+  "inputSchema": {
+   "properties": {
+    "capability": {
+     "default": "chat",
+     "title": "Capability",
+     "type": "string"
+    },
+    "metadata": {
+     "anyOf": [
+      {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Metadata"
+    }
+   },
+   "title": "create_sessionArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "create_sessionOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__list_sessions",
+  "description": "\n    列出所有活跃的 DeepTutor 会话，包含会话 ID、能力、创建时间、最后使用时间和对话轮次。\n    ",
+  "inputSchema": {
+   "properties": {},
+   "title": "list_sessionsArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "list_sessionsOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__delete_session",
+  "description": "\n    删除指定的 DeepTutor 会话。删除后该会话 ID 不再可用。\n\n    Args:\n        session_id: 要删除的会话 ID\n    ",
+  "inputSchema": {
+   "properties": {
+    "session_id": {
+     "title": "Session Id",
+     "type": "string"
+    }
+   },
+   "required": [
+    "session_id"
+   ],
+   "title": "delete_sessionArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "delete_sessionOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__cleanup_sessions",
+  "description": "\n    清理超过指定时长未使用的会话，防止会话数量过多。\n\n    Args:\n        max_age_hours: 最大未使用时长（小时），默认 24 小时\n    ",
+  "inputSchema": {
+   "properties": {
+    "max_age_hours": {
+     "default": 24,
+     "title": "Max Age Hours",
+     "type": "integer"
+    }
+   },
+   "title": "cleanup_sessionsArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "cleanup_sessionsOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__chat",
+  "description": "\n    通用学习对话。适合概念解释、知识问答、学习讨论、学习方法咨询等场景。\n\n    Args:\n        message: 要发送的消息或问题\n        session_id: 可选的会话 ID，传入后保持多轮对话上下文。不填则自动创建新会话。\n        tools: 可选工具列表。常用: rag(知识库检索), web_search(网络搜索), reason(推理), paper_search(论文搜索)\n        kb: 可选的知识库名称，使用 rag 工具时指定从哪个知识库检索\n        include_events: 是否返回详细事件记录（调试用，默认关闭）\n\n    Returns:\n        DeepTutor 的回复内容，以及会话 ID\n    ",
+  "inputSchema": {
+   "properties": {
+    "message": {
+     "title": "Message",
+     "type": "string"
+    },
+    "session_id": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Session Id"
+    },
+    "tools": {
+     "anyOf": [
+      {
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Tools"
+    },
+    "kb": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Kb"
+    },
+    "include_events": {
+     "default": false,
+     "title": "Include Events",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "message"
+   ],
+   "title": "chatArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "chatOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__deep_solve",
+  "description": "\n    有步骤的推理解题。适合数学题、物理题、逻辑推理题、算法题、证明题等需要详细推导过程的场景。\n    会输出完整的解题步骤，而不仅仅是最终答案。\n\n    Args:\n        problem: 题目描述，尽量完整清晰\n        session_id: 可选的会话 ID，用于多轮追问和修改\n        tools: 可选工具列表。推荐: [\"reason\"]（推理解题），或 [\"rag\"]（基于知识库解题）\n        kb: 可选的知识库名称\n        include_events: 是否返回详细事件记录（调试用）\n\n    Returns:\n        详细的解题步骤、推导过程和最终答案\n    ",
+  "inputSchema": {
+   "properties": {
+    "problem": {
+     "title": "Problem",
+     "type": "string"
+    },
+    "session_id": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Session Id"
+    },
+    "tools": {
+     "anyOf": [
+      {
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Tools"
+    },
+    "kb": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Kb"
+    },
+    "include_events": {
+     "default": false,
+     "title": "Include Events",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "problem"
+   ],
+   "title": "deep_solveArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "deep_solveOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__deep_question",
+  "description": "\n    生成测验题目。适合根据某个知识点生成选择题、填空题、简答题等，用于自我检测、教学出题或考前复习。\n\n    Args:\n        topic: 测验主题，如\"线性代数-矩阵运算\"、\"Python-装饰器\"、\"数据结构-二叉树\"\n        session_id: 可选的会话 ID\n        tools: 可选工具列表。如 [\"rag\"] 基于知识库内容出题\n        kb: 可选的知识库名称，基于知识库内容出题\n        question_count: 题目数量，如 5, 10, 20\n        difficulty: 难度，可选: easy, medium, hard\n        question_types: 题目类型，用逗号分隔，如 \"choice,fill,short,true_false\"\n        include_events: 是否返回详细事件记录（调试用）\n\n    Returns:\n        生成的测验题目、参考答案和解析\n    ",
+  "inputSchema": {
+   "properties": {
+    "topic": {
+     "title": "Topic",
+     "type": "string"
+    },
+    "session_id": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Session Id"
+    },
+    "tools": {
+     "anyOf": [
+      {
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Tools"
+    },
+    "kb": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Kb"
+    },
+    "question_count": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Question Count"
+    },
+    "difficulty": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Difficulty"
+    },
+    "question_types": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Question Types"
+    },
+    "include_events": {
+     "default": false,
+     "title": "Include Events",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "topic"
+   ],
+   "title": "deep_questionArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "deep_questionOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__deep_research",
+  "description": "\n    带引用的深度研究。适合学术调研、技术综述、主题研究、行业分析等需要多源检索和结构化报告的场景。\n    会自动搜索网络和论文，生成带引用来源的结构化报告。\n\n    Args:\n        query: 研究主题，如\"2026年RAG技术发展趋势\"、\"Transformer架构演进\"、\"大模型推理优化方法\"\n        session_id: 可选的会话 ID，用于多轮追问和补充\n        tools: 可选工具列表。默认 [\"web_search\", \"paper_search\"]，可加 \"rag\" 结合知识库\n        kb: 可选的知识库名称\n        mode: 报告模式，可选: report(完整报告), outline(大纲)\n        depth: 研究深度，可选: quick(快速), standard(标准), deep(深入)\n        include_events: 是否返回详细事件记录（调试用）\n\n    Returns:\n        结构化的研究报告，包含章节、要点和引用来源\n    ",
+  "inputSchema": {
+   "properties": {
+    "query": {
+     "title": "Query",
+     "type": "string"
+    },
+    "session_id": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Session Id"
+    },
+    "tools": {
+     "anyOf": [
+      {
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Tools"
+    },
+    "kb": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Kb"
+    },
+    "mode": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Mode"
+    },
+    "depth": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Depth"
+    },
+    "include_events": {
+     "default": false,
+     "title": "Include Events",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "query"
+   ],
+   "title": "deep_researchArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "deep_researchOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__visualize",
+  "description": "\n    生成图表、示意图或动画。适合将抽象概念可视化、生成教学配图、数据图表、流程图等。\n\n    Args:\n        description: 可视化描述，如\"画一个神经网络结构图\"、\"用图表展示梯度下降过程\"、\"生成冒泡排序的动画示意图\"\n        session_id: 可选的会话 ID\n        tools: 可选工具列表。如 [\"imagegen\"](图片生成), [\"geogebra_analysis\"](几何绘图)\n        kb: 可选的知识库名称\n        include_events: 是否返回详细事件记录（调试用）\n\n    Returns:\n        生成的可视化内容描述和文件路径（如有生成文件）\n    ",
+  "inputSchema": {
+   "properties": {
+    "description": {
+     "title": "Description",
+     "type": "string"
+    },
+    "session_id": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Session Id"
+    },
+    "tools": {
+     "anyOf": [
+      {
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Tools"
+    },
+    "kb": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Kb"
+    },
+    "include_events": {
+     "default": false,
+     "title": "Include Events",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "description"
+   ],
+   "title": "visualizeArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "visualizeOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__mastery_path",
+  "description": "\n    生成个性化学习计划。适合为某个学习目标制定分阶段的学习路径、资源推荐、里程碑和检查点。\n\n    Args:\n        goal: 学习目标，如\"从零开始学机器学习\"、\"3个月掌握React\"、\"系统学习计算机网络\"\n        session_id: 可选的会话 ID\n        tools: 可选工具列表。如 [\"web_search\"](搜索最新资源), [\"rag\"](基于已有资料)\n        kb: 可选的知识库名称，基于已有学习资料制定计划\n        duration: 学习时长，如 \"1month\", \"3months\", \"6months\"\n        level: 当前水平，可选: beginner, intermediate, advanced\n        daily_hours: 每日学习小时数，如 \"1\", \"2\", \"3\"\n        include_events: 是否返回详细事件记录（调试用）\n\n    Returns:\n        结构化的学习计划，包含阶段划分、学习内容、推荐资源、里程碑和检查点\n    ",
+  "inputSchema": {
+   "properties": {
+    "goal": {
+     "title": "Goal",
+     "type": "string"
+    },
+    "session_id": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Session Id"
+    },
+    "tools": {
+     "anyOf": [
+      {
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Tools"
+    },
+    "kb": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Kb"
+    },
+    "duration": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Duration"
+    },
+    "level": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Level"
+    },
+    "daily_hours": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Daily Hours"
+    },
+    "include_events": {
+     "default": false,
+     "title": "Include Events",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "goal"
+   ],
+   "title": "mastery_pathArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "mastery_pathOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__list_knowledge_bases",
+  "description": "列出 DeepTutor 中所有可用的知识库名称和基本信息。",
+  "inputSchema": {
+   "properties": {},
+   "title": "list_knowledge_basesArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "list_knowledge_basesOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__search_knowledge_base",
+  "description": "\n    在指定知识库中搜索相关内容，返回最相关的文档片段。\n\n    Args:\n        kb_name: 知识库名称（先用 list_knowledge_bases 查看可用名称）\n        query: 搜索查询\n        top_k: 返回结果数量，默认 5\n    ",
+  "inputSchema": {
+   "properties": {
+    "kb_name": {
+     "title": "Kb Name",
+     "type": "string"
+    },
+    "query": {
+     "title": "Query",
+     "type": "string"
+    },
+    "top_k": {
+     "default": 5,
+     "title": "Top K",
+     "type": "integer"
+    }
+   },
+   "required": [
+    "kb_name",
+    "query"
+   ],
+   "title": "search_knowledge_baseArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "search_knowledge_baseOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__deeptutor__get_config",
+  "description": "获取当前 MCP Server 的配置信息，包括 CLI 路径、工作目录、超时设置和活跃会话数。",
+  "inputSchema": {
+   "properties": {},
+   "title": "get_configArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "get_configOutput",
+   "type": "object"
+  },
+  "server": "deeptutor"
+ },
+ {
+  "name": "mcp__reasonix__code",
+  "description": "\n    把一个完整的开发任务委派给 Reasonix 编码 agent，它能真实读写文件、运行命令。\n\n    最佳用法是「一次性委派大任务」：Reasonix 内部会自主探索代码库、多轮迭代，\n    单个 session 内前缀缓存持续命中，并在上下文达 compact_ratio(默认 80%) 时\n    自动压缩历史。任务越完整，它的省 token 机制收益越大。\n    反之，把大任务拆成多次独立调用会让每次都重建缓存，反而更贵。\n\n    适合：实现功能、修 bug、重构、补测试、加类型标注、跨文件批量改动。\n    不需要预先指明文件，描述目标即可。\n\n    Args:\n        task: 任务描述，越具体越好。例：\"给 utils.py 里所有函数补上类型标注\"\n        cwd: 任务执行的工作目录（代码库根目录）。不填用服务端默认目录。\n        model: provider 名，如 ark-code。不填用配置里的 default_model。\n        max_steps: 最大工具调用轮数，0 或不填为自动。\n        allowed_tools: 限制可用工具的规则串，用于收窄权限。\n        show_usage: 是否在结果末尾附带 token 用量。\n\n    Returns:\n        Reasonix 的执行结果，含 session_id（可用于 continue_session 追问）。\n    ",
+  "inputSchema": {
+   "properties": {
+    "task": {
+     "title": "Task",
+     "type": "string"
+    },
+    "cwd": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Cwd"
+    },
+    "model": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Model"
+    },
+    "max_steps": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Max Steps"
+    },
+    "allowed_tools": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Allowed Tools"
+    },
+    "show_usage": {
+     "default": false,
+     "title": "Show Usage",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "task"
+   ],
+   "title": "codeArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "codeOutput",
+   "type": "object"
+  },
+  "server": "reasonix"
+ },
+ {
+  "name": "mcp__reasonix__ask",
+  "description": "\n    让 Reasonix 阅读代码库后回答问题，不修改任何文件（只读工具）。\n\n    成本提示：每次调用都是新进程新 session，前缀缓存从零建立，\n    单次零碎问答会付建缓存开销而吃不到复用收益。因此仅在真正需要\n    Reasonix 的 LSP 辅助代码理解能力时使用；一般的代码搜索和阅读\n    用宿主自带的 grep / read 工具更省。\n\n    适合：陌生大型代码库的结构梳理、跨文件调用链分析、改动影响面评估。\n    不适合：查一个函数在哪、读一个文件、grep 一个字符串。\n\n    Args:\n        question: 问题。例：\"这个项目的鉴权流程走哪几个文件？\"\n        cwd: 要分析的代码库目录。\n        model: provider 名。\n        show_usage: 是否附带 token 用量。\n\n    Returns:\n        Reasonix 基于真实代码的回答，含 session_id。\n        后续追问请用 continue_session 复用该 session 以命中缓存。\n    ",
+  "inputSchema": {
+   "properties": {
+    "question": {
+     "title": "Question",
+     "type": "string"
+    },
+    "cwd": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Cwd"
+    },
+    "model": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Model"
+    },
+    "show_usage": {
+     "default": false,
+     "title": "Show Usage",
+     "type": "boolean"
+    }
+   },
+   "required": [
+    "question"
+   ],
+   "title": "askArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "askOutput",
+   "type": "object"
+  },
+  "server": "reasonix"
+ },
+ {
+  "name": "mcp__reasonix__review",
+  "description": "\n    让 Reasonix 对本地 git 改动做 AI 代码审查。\n\n    Args:\n        cwd: git 仓库目录。\n        base: 对比的基准分支，如 main。不填用 reasonix 默认行为。\n        model: provider 名。\n\n    Returns:\n        审查意见。\n    ",
+  "inputSchema": {
+   "properties": {
+    "cwd": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Cwd"
+    },
+    "base": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Base"
+    },
+    "model": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Model"
+    }
+   },
+   "title": "reviewArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "reviewOutput",
+   "type": "object"
+  },
+  "server": "reasonix"
+ },
+ {
+  "name": "mcp__reasonix__subagent",
+  "description": "\n    在隔离的一次性子智能体里执行任务，返回一份提炼后的结论。\n\n    子智能体跑在独立 ephemeral session 中，只有只读工具，探索产生的\n    大量中间上下文不会污染主对话——这本身就是一种省 token 手段：\n    宿主只收到最终结论，不承担探索过程的 token。\n\n    可用 profile（内置）：\n      explore         — 广撒网只读调研。适合\"找出所有做 X 的地方\"、\n                        \"X 在项目里是怎么工作的\"、\"梳理 Y 相关代码\"\n      research        — web_fetch + 代码阅读结合。适合\"库 Y 支持 X 吗\"、\n                        \"做 Z 的规范方式是什么\"、\"我们的实现和规范差在哪\"\n      review          — 审查当前分支 diff：正确性、安全、缺失测试、\n                        隐藏行为变更；给结论 + 每问题 file:line。只读\n      security-review — 安全专项审查 diff：注入/鉴权/密钥/反序列化/\n                        路径穿越/加密问题，带严重级别标注。只读\n\n    Args:\n        profile: 上面四个之一，或你用 reasonix subagent create 自建的档位名。\n        task: 交给子智能体的任务描述。\n        cwd: 代码库目录。\n        model: provider 名。\n        max_steps: 最大工具调用轮数。\n\n    Returns:\n        子智能体提炼后的结论。\n    ",
+  "inputSchema": {
+   "properties": {
+    "profile": {
+     "title": "Profile",
+     "type": "string"
+    },
+    "task": {
+     "title": "Task",
+     "type": "string"
+    },
+    "cwd": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Cwd"
+    },
+    "model": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Model"
+    },
+    "max_steps": {
+     "anyOf": [
+      {
+       "type": "integer"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Max Steps"
+    }
+   },
+   "required": [
+    "profile",
+    "task"
+   ],
+   "title": "subagentArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "subagentOutput",
+   "type": "object"
+  },
+  "server": "reasonix"
+ },
+ {
+  "name": "mcp__reasonix__list_subagents",
+  "description": "列出当前可用的 Reasonix 子智能体档位（含内置与自建）。",
+  "inputSchema": {
+   "properties": {
+    "cwd": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Cwd"
+    }
+   },
+   "title": "list_subagentsArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "list_subagentsOutput",
+   "type": "object"
+  },
+  "server": "reasonix"
+ },
+ {
+  "name": "mcp__reasonix__continue_session",
+  "description": "\n    在已有 Reasonix 会话上继续对话，保留上下文。\n\n    Args:\n        task: 追问或后续任务。\n        session_id: 之前 code / ask 返回的 session_id。\n        cwd: 工作目录，应与原会话一致。\n        model: provider 名。\n\n    Returns:\n        Reasonix 的后续回复。\n    ",
+  "inputSchema": {
+   "properties": {
+    "task": {
+     "title": "Task",
+     "type": "string"
+    },
+    "session_id": {
+     "title": "Session Id",
+     "type": "string"
+    },
+    "cwd": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Cwd"
+    },
+    "model": {
+     "anyOf": [
+      {
+       "type": "string"
+      },
+      {
+       "type": "null"
+      }
+     ],
+     "default": null,
+     "title": "Model"
+    }
+   },
+   "required": [
+    "task",
+    "session_id"
+   ],
+   "title": "continue_sessionArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "continue_sessionOutput",
+   "type": "object"
+  },
+  "server": "reasonix"
+ },
+ {
+  "name": "mcp__reasonix__list_sessions",
+  "description": "列出本进程记录过的 Reasonix 会话。",
+  "inputSchema": {
+   "properties": {},
+   "title": "list_sessionsArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "list_sessionsOutput",
+   "type": "object"
+  },
+  "server": "reasonix"
+ },
+ {
+  "name": "mcp__reasonix__get_config",
+  "description": "查看 Reasonix MCP Server 的当前配置与 CLI 诊断信息。",
+  "inputSchema": {
+   "properties": {},
+   "title": "get_configArguments",
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "title": "Result",
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "title": "get_configOutput",
+   "type": "object"
+  },
+  "server": "reasonix"
+ },
+ {
+  "name": "mcp__openhands__openhands_create_conversation",
+  "description": "【OpenHands】创建新会话并立即开始执行任务。\n\nDSH 指挥 OpenHands 干活的入口：给一个开发任务描述，OpenHands 会自动\n读写文件、执行命令、自主完成任务。返回会话 ID（后续用它查进度/结果）。",
+  "inputSchema": {
+   "additionalProperties": false,
+   "properties": {
+    "task": {
+     "type": "string",
+     "description": "要 OpenHands 完成的任务描述（如\"修复 src 下的测试失败\"）"
+    },
+    "workspace_dir": {
+     "default": "E:/OpenHands",
+     "type": "string",
+     "description": "OpenHands 的工作目录（可访问的项目文件夹）"
+    },
+    "model": {
+     "default": "openai/ark-code-latest",
+     "type": "string",
+     "description": "LLM 模型标识（默认 deepseek/deepseek-chat）"
+    },
+    "api_key": {
+     "default": "",
+     "type": "string",
+     "description": "LLM API Key（留空则用 DSH 环境配置）"
+    },
+    "base_url": {
+     "default": "https://ark.cn-beijing.volces.com/api/plan/v3",
+     "type": "string",
+     "description": "OpenAI 兼容端点（默认 DeepSeek 官方）"
+    }
+   },
+   "required": [
+    "task"
+   ],
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "type": "object",
+   "x-fastmcp-wrap-result": true
+  },
+  "_meta": {
+   "fastmcp": {
+    "tags": []
+   }
+  },
+  "server": "openhands"
+ },
+ {
+  "name": "mcp__openhands__openhands_run_task",
+  "description": "【OpenHands】向已有会话追加新任务并运行。",
+  "inputSchema": {
+   "additionalProperties": false,
+   "properties": {
+    "conversation_id": {
+     "type": "string",
+     "description": "会话 ID（openhands_create_conversation 的返回值）"
+    },
+    "task": {
+     "type": "string",
+     "description": "要执行的任务描述"
+    }
+   },
+   "required": [
+    "conversation_id",
+    "task"
+   ],
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "type": "object",
+   "x-fastmcp-wrap-result": true
+  },
+  "_meta": {
+   "fastmcp": {
+    "tags": []
+   }
+  },
+  "server": "openhands"
+ },
+ {
+  "name": "mcp__openhands__openhands_get_status",
+  "description": "【OpenHands】查询会话执行状态（idle=空闲/完成, running=执行中）。",
+  "inputSchema": {
+   "additionalProperties": false,
+   "properties": {
+    "conversation_id": {
+     "type": "string",
+     "description": "会话 ID"
+    }
+   },
+   "required": [
+    "conversation_id"
+   ],
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "type": "object",
+   "x-fastmcp-wrap-result": true
+  },
+  "_meta": {
+   "fastmcp": {
+    "tags": []
+   }
+  },
+  "server": "openhands"
+ },
+ {
+  "name": "mcp__openhands__openhands_get_result",
+  "description": "【OpenHands】等待任务完成，获取最终回答 + 真实执行审计。\n\n⚠️ 重要：返回内容包含「实际调用的工具序列」——这是客观证据。\n模型的自述文本可能夸大或不实（例如声称创建了文件但实际没调任何文件工具）。\n请以工具序列为准判断任务是否真的完成；若发现只调了 finish，\n说明它没干活，应重新派发任务或检查报错。",
+  "inputSchema": {
+   "additionalProperties": false,
+   "properties": {
+    "conversation_id": {
+     "type": "string",
+     "description": "会话 ID"
+    },
+    "wait_seconds": {
+     "default": 120,
+     "type": "integer",
+     "description": "最长等待秒数（默认 120，最大 600）"
+    }
+   },
+   "required": [
+    "conversation_id"
+   ],
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "type": "object",
+   "x-fastmcp-wrap-result": true
+  },
+  "_meta": {
+   "fastmcp": {
+    "tags": []
+   }
+  },
+  "server": "openhands"
+ },
+ {
+  "name": "mcp__openhands__openhands_audit_conversation",
+  "description": "【OpenHands】审计某会话的真实执行过程（排查\"是否真干活\"专用）。\n\n读取事件流，列出每一次真实的工具调用与观测结果。\n当你怀疑 OpenHands 只是嘴上说完成、实际没动手时，用这个工具核实。",
+  "inputSchema": {
+   "additionalProperties": false,
+   "properties": {
+    "conversation_id": {
+     "type": "string",
+     "description": "会话 ID"
+    }
+   },
+   "required": [
+    "conversation_id"
+   ],
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "type": "object",
+   "x-fastmcp-wrap-result": true
+  },
+  "_meta": {
+   "fastmcp": {
+    "tags": []
+   }
+  },
+  "server": "openhands"
+ },
+ {
+  "name": "mcp__openhands__openhands_list_conversations",
+  "description": "【OpenHands】列出当前所有会话及其状态。无参数。",
+  "inputSchema": {
+   "additionalProperties": false,
+   "properties": {},
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "type": "object",
+   "x-fastmcp-wrap-result": true
+  },
+  "_meta": {
+   "fastmcp": {
+    "tags": []
+   }
+  },
+  "server": "openhands"
+ },
+ {
+  "name": "mcp__openhands__openhands_list_capabilities",
+  "description": "【OpenHands】列出 OpenHands 当前具备的全部工具能力（自检用）。\n\n返回本桥为每个新会话注册的工具项，以及服务端可用的全部注册名对比。\n当你不确定 OpenHands 能不能干某件事（比如操作浏览器、跑命令）时先调这个。",
+  "inputSchema": {
+   "additionalProperties": false,
+   "properties": {},
+   "type": "object"
+  },
+  "outputSchema": {
+   "properties": {
+    "result": {
+     "type": "string"
+    }
+   },
+   "required": [
+    "result"
+   ],
+   "type": "object",
+   "x-fastmcp-wrap-result": true
+  },
+  "_meta": {
+   "fastmcp": {
+    "tags": []
+   }
+  },
+  "server": "openhands"
+ }
+]
