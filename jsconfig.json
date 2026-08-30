@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "esnext",
+    "checkJs": false,
+    "allowJs": true
+  },
+  "include": ["**/*.js"],
+  "exclude": ["node_modules", ".serena", "**/*.bak", "**/*.bak-*"]
+}
