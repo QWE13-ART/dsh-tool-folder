@@ -1,0 +1,85 @@
+classDiagram
+    direction LR
+
+    class ToolFolderPlugin {
+        +apply(ctx, config) void
+        -cfg Object
+        -logger
+        -index Object
+        -allTools Array
+        -lastVisible Object
+        -chain ChainGuard
+        -META_TOOLS Array
+        -feedback Object
+        +buildDynamicSet(tools, query) Set
+        +addPerServerTopK(dyn, tools, server, bridged, maxK) void
+        +matchesAnyPattern(name, patterns) boolean
+        +isDenied(name) boolean
+        +applyCompression(dynTools) Array
+    }
+
+    class defineToolHost {
+        <<host: @deepseek-ai/dsh-tools>>
+        +defineTool(options) Tool
+        +validateJsonSchemaValue(schema, value, path) Array
+    }
+
+    class tools_search {
+        +name string = "tools_search"
+        +execute(args) Object
+        +isConcurrencySafe() boolean
+    }
+
+    class tools_schema {
+        +name string = "tools_schema"
+        +execute(args) Object
+        +isConcurrencySafe() boolean
+    }
+
+    class SchemaLib {
+        <<lib/schema.js>>
+        +compressTool(tool, {level}) Tool
+        +normalizeDescription(desc) string
+        +sanitizeLossless(v) Object
+    }
+
+    class CategoryLib {
+        <<lib/category.js>>
+        +matchCategory(queryLower, category) Object
+    }
+
+    class ToonifyLib {
+        <<lib/toonify.js>>
+        +toonifyValue(value, {maxStr}) Object
+    }
+
+    class BM25Lib {
+        <<lib/bm25.js>>
+        +buildIndex(docs) Index
+        +search(index, query, topK, opts) Array
+    }
+
+    class ChainGuard {
+        <<lib/chainguard.js>>
+        +record(tool, argv) void
+        +checkChain() Object|null
+        +reset() void
+    }
+
+    class MetricsLib {
+        <<lib/metrics.js>>
+        +selectionCoverage(visible, calls) Object
+        +retrievalMetrics(relevant, retrieved, k) Object
+    }
+
+    ToolFolderPlugin --> BM25Lib : buildIndex/search
+    ToolFolderPlugin --> SchemaLib : compressTool/normalizeDescription/sanitizeLossless
+    ToolFolderPlugin --> CategoryLib : matchCategory
+    ToolFolderPlugin --> ToonifyLib : toonifyValue
+    ToolFolderPlugin --> ChainGuard : record/checkChain
+    ToolFolderPlugin --> MetricsLib : selectionCoverage
+    ToolFolderPlugin ..> defineToolHost : register via ctx.tools.register
+    tools_search ..|> defineToolHost : defineTool(options)
+    tools_schema ..|> defineToolHost : defineTool(options)
+    ToolFolderPlugin --> tools_search : keeps visible (META_TOOLS)
+    ToolFolderPlugin --> tools_schema : keeps visible (META_TOOLS)

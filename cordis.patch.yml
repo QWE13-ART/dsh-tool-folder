@@ -1,0 +1,74 @@
+# dsh-tool-folder bundle patch.
+#
+# Inserts the tool-folder plugin row into the profile composition. Nothing in
+# the base bundle is disabled or replaced — the plugin only filters
+# assembly.tools per request (folded tools remain executable, R1-verified).
+#
+# Harness patches replace the targeted row's WHOLE `config` rather than
+# merging. To override any value, restate the complete config under the same
+# `id: tool-folder` in your profile's own `cordis.patch.yml` (or a `--patch`
+# overlay). `!!js` expressions are allowed (e.g. env binding).
+#
+# v0.2.0: semanticEnabled (default true) adds the bge-m3 hybrid leg to
+# tools_search; it degrades to BM25-only when Ollama is absent — no config
+# needed here, code defaults apply for every field not listed below.
+- insert:
+    - id: tool-folder
+      name: 'dsh-tool-folder'
+      config:
+        enabled: true
+        # Tools always kept in full (schema) for every agent. These are the
+        # platform essentials; everything else is folded and BM25-loaded.
+        core:
+          - read
+          - write
+          - edit
+          - glob
+          - grep
+          - pwsh
+          - web_search
+          - skill
+          - ask_user_question
+          - subagent
+        # Per-agent overrides. agent ids come from context.agent.id; agents
+        # not listed here fall back to `core`. Example:
+        #   perAgent:
+        #     standard:
+        #       core: [read, write, edit, mcp__viking__remember]
+        perAgent: {}
+        # BM25 dynamic segment size per request.
+        topK: 6
+        # Folded tool called this many times auto-promotes into core.
+        hotThreshold: 3
+        # v0.1.5 — meta tool: full parameter schema of one tool by name.
+        schemaToolEnabled: true
+        # L1 compression tier: off | light | standard | aggressive.
+        compressLevel: off
+        # Deprecated compat: compressLevel "off" + compressEnabled true → "standard".
+        compressEnabled: false
+        # Normalize dyn descriptions (injection sanitize + first sentence + 300 chars).
+        normalizeDescriptions: false
+        # Intent routing: { "记忆/回忆": ["mcp__viking"] } — category wins over aliases.
+        category: {}
+        # Whitelist: ["mcp__openhands*", "mcp__viking__remember"]; empty = all (minus deny).
+        include: []
+        # Compact long JSON tool results (drop empty fields + truncate long strings).
+        toonifyResults: false
+        # One-line catalog section for folded tools (model knows they exist).
+        # Off until section render behavior is verified at runtime.
+        catalogEnabled: false
+        # Hard cap before falling back to the full list.
+        maxFoldMs: 50
+        # Feedback persistence (empty = under $DSH_HOME/logs/tool-folder/).
+        feedbackFile: ''
+        # Chinese-intent → server aliases. Pulls the whole server's tools into
+        # the dynamic segment when the query matches (BM25 can't cross the
+        # CN-query / EN-description language gap). Keys are tool-name prefixes.
+        aliases:
+          mcp__viking: ['记忆', '记住', '回忆', 'remember', 'memory']
+          mcp__openhands: ['写代码', '编程', '编码', '开发', 'coding', 'code', 'openhands', '委派', 'delegate']
+          mcp__context7: ['文档', 'api 文档', '库文档', 'documentation', 'docs', 'context7']
+          mcp__deeptutor: ['学习', '课程', '教学', 'tutor', 'study', 'learn']
+          mcp__reasonix: ['推理', '复杂任务', '深度思考', 'reasoning', 'reasonix']
+          mcp__open-design: ['设计', 'design']
+          mcp__serena: ['代码搜索', '搜代码', 'search code', 'serena']

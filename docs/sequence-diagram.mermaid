@@ -1,0 +1,45 @@
+sequenceDiagram
+    autonumber
+    participant Host as dsh-system-prompt assemble()
+    participant P as ToolFolderPlugin.apply()
+    participant S as lib/schema.js
+    participant C as lib/category.js
+    participant B as lib/bm25.js
+    participant R as registry (ctx.tools.register)
+
+    Note over P,R: P0-1 meta tools (per agent apply(), once)
+    P->>R: register(tools_search)  [toolSearchEnabled]
+    P->>R: register(tools_schema)  [schemaToolEnabled]
+
+    Note over Host,P: P0-2/P1-1/P1-2/P2-1 fold pipeline (per request)
+    Host->>P: system-prompt/assemble (assembly, context, next)
+    P->>P: tools = assembledTools.filter(!isDenied && (meta || includeAll || matchesInclude))
+    P->>B: buildIndex(tools)  [on stamp change]
+    P->>P: query = extractQuery(context)
+    P->>C: matchCategory(queryLower, cfg.category)
+    alt category matched
+        P->>P: addPerServerTopK(category servers, bridged query)
+    else aliases fallback
+        P->>P: addPerServerTopK(alias servers, bridged query)
+    end
+    P->>B: search(index, query, topK)
+    P->>P: core + hot + dyn(name-sorted)
+    P->>P: dynTools → normalizeDescription (if on) → compressTool(effectiveLevel)
+    P->>P: META_TOOLS re-injected into visible if folded away
+    P-->>Host: { ...assembled, tools: visible, sections: catalog }
+
+    Note over P,R: tools_schema call (model-driven)
+    Host->>P: tools_schema.execute({name})
+    alt tool in allTools
+        P-->>Host: { found:true, server, description, parameters: sanitizeLossless(...), required }
+    else unknown / not loaded
+        P-->>Host: { found:false, reason }
+    end
+
+    Note over P,R: P2-2 toonify (post-execute, default off)
+    Host->>P: tools/post-execute (exec, result, next)
+    alt toonifyResults && result.content text > 2000 && JSON.parse ok
+        P->>P: content = toonifyValue(parsed) compacted
+    end
+    P->>P: feedback.calls++ / chain.record / selectionCoverage
+    P-->>Host: next()
