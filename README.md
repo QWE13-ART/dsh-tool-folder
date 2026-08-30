@@ -149,6 +149,19 @@ were never unregistered, so nothing else changes.
 
 ## Changelog
 
+### v0.2.1 — heat decay + exact-name priority (2026-08-30)
+1. **Hot heat decay** (`hotWindowDays`, default 3): a tool is promoted to
+   always-visible only when its call count stays inside the sliding window —
+   the old code promoted forever, so any tool used 3 times was permanently
+   resident and the fold silently decayed to zero over time. Legacy
+   `feedback.json` number entries are read as out-of-window → their stale
+   heat expires naturally. Set `hotWindowDays: 0` to keep the old behavior.
+2. **Exact-name priority in `tools_search`**: exact tool-name match always
+   ranks first, a ≥4-char query that is a name substring is pulled ahead of
+   BM25/semantic hits (deterministic fallback chain). Results stay
+   deduplicated.
+3. 40 tests green (11 new: window decay / legacy compat / priority order).
+
 ### v0.2.0 — first npm release (2026-08-30)
 This is the first version published to npm. It bundles the v0.1.7 firewall
 scope fix (exec-only hard block) and the v0.1.8 semantic leg +
