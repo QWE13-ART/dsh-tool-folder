@@ -149,7 +149,7 @@ were never unregistered, so nothing else changes.
 
 ## Changelog
 
-### v0.2.4 — P1: batch tools_schema + sibling closure (2026-08-30, not yet published)
+### v0.2.4 — P1: batch tools_schema + sibling closure (2026-08-31)
 1. **Batch expand** — `tools_schema` accepts `names: [...]` to expand several
    tools in one call (`{ found, results: [...] }`); a single `name` keeps the
    legacy 6-field shape byte-for-byte.
