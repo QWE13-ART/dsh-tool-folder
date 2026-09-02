@@ -149,6 +149,27 @@ were never unregistered, so nothing else changes.
 
 ## Changelog
 
+### v0.2.5 — red-team firewall fixes + retrieval hardening (2026-09-02)
+1. **Exec-tool recognition (red-team F1)** — bare-name matching let MCP-prefixed
+   exec tools (`mcp__windows__Cmd`) bypass the high-risk gate; `isExecTool` now
+   tokenizes the full name and matches every segment (all segments participate —
+   conservative by design, over-recognition is ~free on the gate).
+2. **False-positive roots A/B** — Windows paths are base64-shaped (57-char fake
+   runs) and the bare `&` of `2>&1` looked like an exec verb; a legit gitleaks
+   staged scan was blocked. Path-fingerprint exclusion + `EXEC_VERB` tightening.
+   2/5 measured FPs → 0/5; regression suite `chainguard-fp.test.js` (114 total green).
+3. **Command-substitution download-exec legs** — `$(curl …)` / backtick /
+   `iwr` shapes (no pipe, invisible to the download-pipe pattern).
+4. **BM25 sub-word split** — hyphen/underscore tool names were single index
+   terms (`mcp__codegraph__codegraph_explore`); measured recall 0/10 → 10/10.
+5. **fallbackCatalog round-robin** — pure lexicographic slice hid whole servers
+   (`mcp__*`) from the fallback catalog; now round-robins across servers.
+6. **serverOf unified** — apply-local `split("__")` copy deleted; module-level
+   grouping (native/openhands families) is the single source for search results
+   and sibling closure. `embedTimeoutMs` configurable (default 8000).
+7. Two-axis audit (2026-09-02): comments/tests now match the real conservative
+   design; one-shot repro script removed.
+
 ### v0.2.4 — P1: batch tools_schema + sibling closure (2026-08-31)
 1. **Batch expand** — `tools_schema` accepts `names: [...]` to expand several
    tools in one call (`{ found, results: [...] }`); a single `name` keeps the
