@@ -59,6 +59,27 @@ test("fallbackCatalog: limit<=0 或空输入 → []", () => {
   assert.deepEqual(fallbackCatalog(null, 5), []);
 });
 
+test("fallbackCatalog 缺陷回归: 多 server 轮转配额——尾部 server 不再被字典序截断吞掉", () => {
+  // 2026-09-02 审计（index.js:560 + ux.js:101-103）：纯字典序 slice(0,30) 使
+  // 名字靠后的 server（mcp__windows 等）在零匹配回退时全部不可见 → 模型误判
+  // "没有该能力"。修：跨 server round-robin，小 server 有代表、大 server 拿多数。
+  const tools = [];
+  for (let i = 1; i <= 10; i++) tools.push({ name: `alpha_t${i}`, description: `a${i}` });
+  for (let i = 1; i <= 3; i++) tools.push({ name: `beta_t${i}`, description: `b${i}` });
+  tools.push({ name: "gamma_t1", description: "g" });
+  const svc = (n) => n.split("_")[0]; // alpha/beta/gamma servers
+  const out = fallbackCatalog(tools, 6, svc);
+  const servers = new Set(out.map((r) => r.server));
+  assert.ok(servers.has("gamma"), "只有 1 个工具的 server 也必须出现（纯字典序会漏掉它）");
+  assert.ok(servers.has("beta"), "小 server 有代表");
+  assert.equal(out.length, 6, "limit 仍被尊重");
+  // 组内字典序保持（轮转：alpha_t1, beta_t1, gamma_t1, alpha_t10(字典序在 t2 前), beta_t2, alpha_t2）
+  assert.deepEqual(out.map((r) => r.name), ["alpha_t1", "beta_t1", "gamma_t1", "alpha_t10", "beta_t2", "alpha_t2"]);
+  // 确定性：同输入两次结果一致
+  const again = fallbackCatalog(tools, 6, svc);
+  assert.deepEqual(again.map((r) => r.name), out.map((r) => r.name), "同输入必须同输出");
+});
+
 test("fallbackCatalog: serverOf 缺省安全", () => {
   const out = fallbackCatalog([{ name: "x" }], 1);
   assert.equal(out[0].server, "");

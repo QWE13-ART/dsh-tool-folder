@@ -3,8 +3,7 @@
 // 覆盖：verdict 高危模式全命中 / 无害命令不命中 / JSON 转义不绕过 / isExecTool 分类 / ChainGuard 链检测
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import fs from "node:fs";
-import { verdict, ChainGuard } from "../lib/chainguard.js";
+import { verdict, ChainGuard, isExecTool } from "../lib/chainguard.js";
 
 // ---------- verdict：高危模式全部命中 ----------
 test("verdict: recursive root delete（rm -rf C:\\ 与 rm -rf /）", () => {
@@ -58,29 +57,24 @@ test("verdict: JSON.stringify 转义不绕过（rm -rf C:\\\\）", () => {
   assert.equal(verdict(argv).blocked, true);
 });
 
-// ---------- isExecTool 分类（从 index.js 提取真实实现） ----------
-function extractIsExecTool() {
-  const src = fs.readFileSync(new URL("../lib/index.js", import.meta.url), "utf8");
-  const m = src.match(/function isExecTool\(name\) \{\n[\s\S]*?\n\}/);
-  assert.ok(m, "index.js 中找不到 isExecTool 函数");
-  return eval(`(${m[0]})`);
-}
-
+// ---------- isExecTool 分类（2026-09-02: 函数移入 chainguard.js 并导出，
+// 分段词表化——red-team F1：`mcp__windows__Cmd` 等 MCP 前缀执行工具曾漏判） ----------
 test("isExecTool: 执行类工具全部判定为执行", () => {
-  const isExecTool = extractIsExecTool();
   for (const n of ["pwsh", "shell", "bash", "cmd", "exec", "terminal", "run", "console"]) {
     assert.equal(isExecTool(n), true, `${n} 应为执行类`);
   }
   assert.equal(isExecTool("mcp__windows__PowerShell"), true, "PowerShell MCP 应为执行类（2026-08-30 补漏）");
+  assert.equal(isExecTool("mcp__windows__Cmd"), true, "Cmd MCP 参数即命令（2026-09-02 分段化补漏）");
+  assert.equal(isExecTool("mcp__tools__terminal"), true, "terminal MCP 分段命中");
   assert.equal(isExecTool("mcp__windows__App"), true, "App MCP launch_executable 可启动任意程序（2026-08-30 审计补漏）");
   assert.equal(isExecTool("ssh_exec"), true);
   assert.equal(isExecTool("run_shell"), true);
   assert.equal(isExecTool("wsl.exe"), true);
+  assert.equal(isExecTool("wsl"), true, "裸 wsl 名（旧 startsWith 前缀仍覆盖）");
 });
 
 test("isExecTool: 内容类工具不误判", () => {
-  const isExecTool = extractIsExecTool();
-  for (const n of ["write", "read", "edit", "glob", "grep", "apply_patch", "lesson_save", "mem_save_prompt", "web_search", "mcp__github__get_file_contents"]) {
+  for (const n of ["write", "read", "edit", "glob", "grep", "apply_patch", "lesson_save", "mem_save_prompt", "web_search", "mcp__github__get_file_contents", "mcp__serena__find_declaration", "mcp__codegraph__codegraph_explore"]) {
     assert.equal(isExecTool(n), false, `${n} 不应为执行类`);
   }
 });
